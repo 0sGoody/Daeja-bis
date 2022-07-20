@@ -1,0 +1,53 @@
+import numpy as np
+a = 0
+auto = 61 #number of autos +1
+atk_mult = 1.3 #initial base attack speed multiplier
+AD = 46
+AP = 110
+Base_Atk = 0.6
+Atk_per_stack = 30
+dmg = np.zeros(auto)
+t = np.zeros(auto)
+titans = np.zeros(auto)
+Duelist_stack=np.zeros(auto)
+Archangel=np.zeros(auto)
+wave_count=0
+starting_mana=0
+max_mana=100
+accrue_mana=max_mana
+wave_dmg=()
+n=1
+while n<26 and n<auto:
+    titans[n]=titans[n-1]+2
+    n=n+1
+if auto>26:
+    titans[26::]=50
+n=1
+while n<11:
+    Duelist_stack[n] = 0.01*n
+    n=n+1
+Duelist_stack[11::]=0.1
+
+dmg[0] = 0
+t[0]=(Base_Atk*atk_mult)**(-1)
+
+
+for x in range(1, auto):
+  a=Base_Atk*(atk_mult+0.06*x+Atk_per_stack*Duelist_stack[x])
+  if a>5:
+      a=5
+  t[x]=a**(-1)
+  #Archangel[x]=np.floor(sum(t[0:-1])/5)
+  #if Archangel[x] != Archangel[x-1]:
+      #AP=AP+20
+  dmg[x]=(AD+titans[x-1]+40*((AP+titans[x-1])/100))*3*1.325
+  mana=starting_mana+10*x
+  if mana/accrue_mana>=1:
+      wave_dmg=np.append(wave_dmg, ((AP+titans[x-1])/100)*375*1.325)
+      wave_count=wave_count+1
+      accrue_mana=accrue_mana+max_mana
+t[-1]=0 #discard the last time value
+print('It takes',sum(t),'(s)','to reach',x,'Rageblade stacks with',a,'attack speed.')
+print('Total Damage from autos:',sum(dmg))
+print('There\'d be',wave_count,'waves dealing',*wave_dmg,'damage, this totals',sum(wave_dmg),'dmg')
+print('Daeja gets',mana,'mana in this time')
